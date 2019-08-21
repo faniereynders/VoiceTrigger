@@ -1,5 +1,5 @@
 ﻿@page
-@inject IOptions<Dictionary<string, string>> options
+@inject IOptions<Dictionary<string, TriggerOption>> options
 
 @{
     Layout = "";
@@ -18,13 +18,13 @@
     </environment>
 </head>
 <body>
-    
+
     <div class="container body-content">
-        <img style="display:none" src="https://media.giphy.com/media/hZeqOP55N3crK/giphy.gif" id="gif"/>
         @foreach (var trigger in options.Value)
         {
-            <audio id="@trigger.Key" controls hidden>
-                <source  src="@trigger.Value" type="audio/mpeg">
+            <img style="display:none" src="@trigger.Value.GifUri" id="gif_@trigger.Key" />
+            <audio id="sound_@trigger.Key" controls hidden>
+                <source src="@trigger.Value.SoundUri" type="audio/mpeg">
                 Your browser does not support the audio element.
             </audio>
         }

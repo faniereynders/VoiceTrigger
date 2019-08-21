@@ -1,11 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,10 +25,9 @@ namespace VoiceTrigger
 
             services
                 .AddSingleton<IHostedService, TriggerRecognizerBackgroundService>()
-                .AddSingleton<TriggerDispatcher>()
-                .AddSingleton<TriggerRecognizer>();
+                .AddSingleton<ITriggerDispatcher, TriggerDispatcher>();
 
-            services.Configure<Dictionary<string, string>>(Configuration.GetSection("Triggers"));
+            services.Configure<Dictionary<string, TriggerOption>>(Configuration.GetSection("Triggers"));
             services.AddSignalR();
         }
 

@@ -4,13 +4,15 @@ var connection = new signalR.HubConnectionBuilder().withUrl("/trigger").build();
 
 
 connection.on("TriggerReceived", function (key, value) {
+    var gifId = "gif_" + key;
+    var soundId = "sound_" + key;
     console.info("KEY: " + key + ", VALUE: " + value);
 
-    document.getElementById(key).play();
-    document.getElementById("gif").style.display = "block";
+    document.getElementById(soundId).play();
+    document.getElementById(gifId).style.display = "block";
 
     setTimeout(function () {
-        document.getElementById("gif").style.display = "none";
+        document.getElementById(gifId).style.display = "none";
     }, 5000);
     
 });

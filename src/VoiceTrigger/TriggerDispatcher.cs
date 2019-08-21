@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -8,58 +8,45 @@ using System.Threading.Tasks;
 
 namespace VoiceTrigger
 {
-    public class TriggerDispatcher
+    public class TriggerDispatcher : ITriggerDispatcher
     {
-        private Dictionary<string, string> options;
-        public TriggerDispatcher(IOptions<Dictionary<string, string>> options, IHubContext<VoiceTriggerHub> hubContext)
-        {
-            this.options = options.Value;
-            this.hubContext = hubContext;
-        }
-
+        private Dictionary<string, TriggerOption> triggers;
         private static string lastText = string.Empty;
         private static bool playing = false;
         private readonly IHubContext<VoiceTriggerHub> hubContext;
+        private readonly ILogger<TriggerDispatcher> logger;
+
+        public TriggerDispatcher(IOptions<Dictionary<string, TriggerOption>> options, IHubContext<VoiceTriggerHub> hubContext, ILogger<TriggerDispatcher> logger)
+        {
+            this.triggers = options.Value;
+            this.hubContext = hubContext;
+            this.logger = logger;
+        }
 
         public async Task Dispatch(string text)
         {
-
-            if (lastText != string.Empty)
+            try
             {
-                text = text.Replace(lastText, string.Empty);
+                if (lastText != string.Empty)
+                {
+                    text = text.Replace(lastText, string.Empty);
+                }
 
-                //Console.WriteLine("Last: " + lastText);
-                //Console.WriteLine("new: " + text);
+                var trigger = triggers.SingleOrDefault(t => text.ToLower().Contains(t.Key.ToLower()));
+                if (trigger.Value != null && !playing)
+                {
+                    logger.LogDebug(trigger.Key);
+                    await hubContext.Clients.All.SendAsync("TriggerReceived", trigger.Key, trigger.Value);
+
+                }
+                lastText = text;
             }
-
+            catch (Exception ex)
+            {
+                logger.LogError(ex, ex.Message);
+                
+            }    
             
-            var trigger =options.SingleOrDefault(t => text.ToLower().Contains(t.Key.ToLower()));
-            if (trigger.Value != null && !playing)
-            {
-                Console.WriteLine(trigger.Key);
-                await hubContext.Clients.All.SendAsync("TriggerReceived", trigger.Key, trigger.Value);
-
-            }
-            lastText = text;
-            // lastText = string.Empty;
         }
-
-        //private static async Task Play(string file)
-        //{
-
-        //    using (var audioFile = new AudioFileReader(file))
-        //    using (var outputDevice = new WaveOutEvent())
-        //    {
-        //        outputDevice.Init(audioFile);
-        //        outputDevice.Play();
-        //        while (outputDevice.PlaybackState == PlaybackState.Playing)
-        //        {
-        //            playing = true;
-        //            await Task.Delay(1000);
-        //        }
-        //    }
-        //    playing = false;
-        //    // return Task.CompletedTask;
-        //}
     }
 }
