@@ -12,10 +12,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VoiceTrigger</title>
-
-    <environment include="Development">
-        <link rel="stylesheet" href="~/css/site.css" />
-    </environment>
+    <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
 
@@ -31,10 +28,8 @@
 
 
     </div>
+    <script src="~/lib/@@aspnet/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
 
-    <environment include="Development">
-        <script src="~/lib/@@aspnet/signalr/dist/browser/signalr.js"></script>
-        <script src="~/js/site.js" asp-append-version="true"></script>
-    </environment>
 </body>
 </html>
