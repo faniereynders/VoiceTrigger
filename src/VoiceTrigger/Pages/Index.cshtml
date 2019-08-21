@@ -1,0 +1,40 @@
+﻿@page
+@inject IOptions<Dictionary<string, string>> options
+
+@{
+    Layout = "";
+}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VoiceTrigger</title>
+
+    <environment include="Development">
+        <link rel="stylesheet" href="~/css/site.css" />
+    </environment>
+</head>
+<body>
+    
+    <div class="container body-content">
+        <img style="display:none" src="https://media.giphy.com/media/hZeqOP55N3crK/giphy.gif" id="gif"/>
+        @foreach (var trigger in options.Value)
+        {
+            <audio id="@trigger.Key" controls hidden>
+                <source  src="@trigger.Value" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+        }
+
+
+    </div>
+
+    <environment include="Development">
+        <script src="~/lib/@@aspnet/signalr/dist/browser/signalr.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+    </environment>
+</body>
+</html>
