@@ -17,6 +17,21 @@ connection.on("TriggerReceived", function (key, value) {
     
 });
 
+async function start() {
+    try {
+        await connection.start();
+        console.log("connected");
+        location.reload();
+    } catch (err) {
+        console.log(err);
+        setTimeout(() => start(), 5000);
+    }
+};
+
+connection.onclose(async () => {
+    await start();
+});
+
 connection.start().then(function () {
     
 }).catch(function (err) {

@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.IO;
 
 namespace VoiceTrigger
 {
@@ -12,6 +15,32 @@ namespace VoiceTrigger
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((context, builder) =>
+                {
+                    var config = builder.Build();
+                    var triggersFile = config["TriggersFile"];
+
+                    if (config["MsCog:SubscriptionId"] == null)
+                    {
+                        throw new ArgumentNullException("MsCog:SubscriptionId");
+                    }
+                    if (config["MsCog:Region"] == null)
+                    {
+                        throw new ArgumentNullException("MsCog:Region");
+                    }
+
+                    if (triggersFile != null)
+                    {
+                        if (File.Exists(triggersFile))
+                        {
+                            builder.AddJsonFile(triggersFile);
+                        }
+                        else
+                        {
+                            throw new FileNotFoundException($"Trigger file {triggersFile} not found.");
+                        }
+                    }
+                })
                 .UseStartup<Startup>();
     }
 }
