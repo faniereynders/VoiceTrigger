@@ -29,6 +29,8 @@ namespace VoiceTrigger
 
             services.Configure<Dictionary<string, TriggerOption>>(Configuration.GetSection("Triggers"));
             services.AddSignalR();
+
+            services.ConfigureOptions(typeof(ConfigureOptions));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

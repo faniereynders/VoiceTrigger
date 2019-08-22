@@ -20,15 +20,6 @@ namespace VoiceTrigger
                     var config = builder.Build();
                     var triggersFile = config["TriggersFile"];
 
-                    if (config["MsCog:SubscriptionId"] == null)
-                    {
-                        throw new ArgumentNullException("MsCog:SubscriptionId");
-                    }
-                    if (config["MsCog:Region"] == null)
-                    {
-                        throw new ArgumentNullException("MsCog:Region");
-                    }
-
                     if (triggersFile != null)
                     {
                         if (File.Exists(triggersFile))
@@ -39,6 +30,15 @@ namespace VoiceTrigger
                         {
                             throw new FileNotFoundException($"Trigger file {triggersFile} not found.");
                         }
+                    }
+                    config = builder.Build();
+                    if (config["MsCog:SubscriptionId"] == null)
+                    {
+                        throw new ArgumentNullException("MsCog:SubscriptionId");
+                    }
+                    if (config["MsCog:Region"] == null)
+                    {
+                        throw new ArgumentNullException("MsCog:Region");
                     }
                 })
                 .UseStartup<Startup>();

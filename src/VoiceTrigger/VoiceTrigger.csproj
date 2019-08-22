@@ -1,15 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
+    <Version>1.0.3</Version>
+    <License>https://github.com/faniereynders/VoiceTrigger/blob/master/LICENSE</License>
     <IsPackable>true</IsPackable>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <UserSecretsId>68ead8d6-8594-4797-b557-404fa622d33a</UserSecretsId>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>voicetrigger</ToolCommandName>
+    <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.6.0" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.1.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="wwwroot\**\*" />
   </ItemGroup>
 </Project>
