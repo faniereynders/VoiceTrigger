@@ -11,4 +11,8 @@ jobs:
     - uses: actions/checkout@v1
     - name: Build Project
       run: dotnet build ./src/VoiceTrigger/VoiceTrigger.csproj
+    - name: Get dotnet-version
+      run: dotnet tool install -g dotnet-version-cli
+    - name: Version em
+      run: dotnet version -f ./src/VoiceTrigger/VoiceTrigger.csproj patch --output-format=json
     
