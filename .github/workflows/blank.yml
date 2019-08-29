@@ -10,4 +10,6 @@ jobs:
     - uses: actions/checkout@v1
     - name: Build Project
       run: dotnet build ./src/VoiceTrigger/VoiceTrigger.csproj /t:pack -c Release
+    - name: Push to NuGet
+      run: dotnet nuget push ./src/VoiceTrigger/bin/Release/*.nupkg /t:pack -k ${{ secrets.GITHUB_TOKEN }}
     
