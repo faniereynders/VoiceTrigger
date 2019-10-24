@@ -7,27 +7,48 @@ using System.Threading.Tasks;
 
 namespace VoiceTrigger
 {
+    public class GenericSpeechRecognitionResult
+    {
+        public GenericSpeechRecognitionResult(string text)
+        {
+            this.Text = text;
+        }
+        public string Text { get; }
+    }
+    public class GenericSpeechRecognitionEventArgs
+    {
+        public GenericSpeechRecognitionResult Result { get; set; }
+    }
+
+
     public class TriggerRecognizerBackgroundService : BackgroundService
     {
         private readonly ITriggerDispatcher triggerDispatcher;
-        private readonly SpeechRecognizer speechRecognizer;
+        private readonly ISpeechRecognitionProvider speechRecognitionProvider;
         private readonly ILogger<TriggerRecognizerBackgroundService> logger;
 
-        public TriggerRecognizerBackgroundService(ITriggerDispatcher triggerDispatcher, IConfiguration configuration, ILogger<TriggerRecognizerBackgroundService> logger)
+        public TriggerRecognizerBackgroundService(ITriggerDispatcher triggerDispatcher, IConfiguration configuration, ILogger<TriggerRecognizerBackgroundService> logger, ISpeechRecognitionProvider speechRecognitionProvider)
         {
             this.triggerDispatcher = triggerDispatcher;
-            var config = SpeechConfig.FromSubscription(configuration["MsCog:SubscriptionId"], configuration["MsCog:Region"]);
-            this.speechRecognizer = new SpeechRecognizer(config);
+            this.speechRecognitionProvider = speechRecognitionProvider;
             this.logger = logger;
         }
 
         public override Task StartAsync(CancellationToken cancellationToken)
         {
-            speechRecognizer.Recognizing += async (s, e) =>
+
+            //speechRecognitionProvider.Initialize((s, t) =>
+            //{
+            //    await triggerDispatcher.Dispatch(e.Result.Text);
+            //    logger.LogInformation($"RECOGNIZING: Text={e.Result.Text}");
+            //};
+
+
+            speechRecognitionProvider.Initialize(async (result) =>
             {
-                await triggerDispatcher.Dispatch(e.Result.Text);
-                logger.LogInformation($"RECOGNIZING: Text={e.Result.Text}");
-            };
+                await triggerDispatcher.Dispatch(result.Text);
+                logger.LogInformation($"RECOGNIZING: Text={result.Text}");
+            });
             return base.StartAsync(cancellationToken);
         }
 
@@ -35,14 +56,14 @@ namespace VoiceTrigger
         {
             while (true)
             {
-                await speechRecognizer.StartContinuousRecognitionAsync().ConfigureAwait(false);
+                await speechRecognitionProvider.StartRecognitionAsync().ConfigureAwait(false);
                 Thread.Sleep(1000);
             }
         }
 
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
-            await speechRecognizer.StopContinuousRecognitionAsync().ConfigureAwait(false);
+            await speechRecognitionProvider.StopRecognitionAsync().ConfigureAwait(false);
             await base.StopAsync(cancellationToken);
         }
     }

@@ -31,15 +31,15 @@ namespace VoiceTrigger
                             throw new FileNotFoundException($"Trigger file {triggersFile} not found.");
                         }
                     }
-                    config = builder.Build();
-                    if (config["MsCog:SubscriptionId"] == null)
-                    {
-                        throw new ArgumentNullException("MsCog:SubscriptionId");
-                    }
-                    if (config["MsCog:Region"] == null)
-                    {
-                        throw new ArgumentNullException("MsCog:Region");
-                    }
+                    //config = builder.Build();
+                    //if (config["MsCog:SubscriptionId"] == null)
+                    //{
+                    //    throw new ArgumentNullException("MsCog:SubscriptionId");
+                    //}
+                    //if (config["MsCog:Region"] == null)
+                    //{
+                    //    throw new ArgumentNullException("MsCog:Region");
+                    //}
                 })
                 .UseStartup<Startup>();
     }

@@ -1,18 +1,25 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CognitiveServices.Speech;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace VoiceTrigger
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly ILogger<Startup> logger;
+
+        public Startup(IConfiguration configuration, ILogger<Startup> logger)
         {
             Configuration = configuration;
+            this.logger = logger;
         }
 
         public IConfiguration Configuration { get; }
@@ -22,6 +29,19 @@ namespace VoiceTrigger
         {
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+
+            if (Configuration.GetChildren().Any(i => i.Key == "MsCog"))
+            {
+                Console.WriteLine("Recognizer: MS Cognitive Services");
+                services.AddSingleton<ISpeechRecognitionProvider, CognitiveServicesRecognitionProvider>();
+            }
+            else
+            {
+                Console.WriteLine("Recognizer: System.Speech");
+                services.AddSingleton<ISpeechRecognitionProvider, SystemSpeechRecognitionProvider>();
+            }
+
 
             services
                 .AddSingleton<IHostedService, TriggerRecognizerBackgroundService>()
@@ -45,7 +65,7 @@ namespace VoiceTrigger
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
-                        
+
             app.UseStaticFiles();
             app.UseSignalR(routes =>
             {

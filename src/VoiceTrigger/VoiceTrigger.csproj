@@ -23,4 +23,9 @@
   <ItemGroup>
     <EmbeddedResource Include="wwwroot\**\*" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Speech">
+      <HintPath>..\..\assemblies\System.Speech.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>
